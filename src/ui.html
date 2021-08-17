@@ -1,0 +1,69 @@
+<script>
+  const baseUrl = "https://raw.githubusercontent.com/CloneTrooper1019/Roblox-Client-Tracker/37161a4846dfb8beeaad536205bc2c0138ae8a29/QtResources/QtUI"
+
+  const themes = {
+    "DarkTheme": "Dark",
+    "LightTheme": "Light",
+  }
+
+  const sleep = (timeout = 100) => new Promise((resolve) => setTimeout(resolve, timeout))
+
+  async function ipcMessage(message) {
+    window.parent.postMessage({
+      pluginMessage: message,
+    }, "*")
+  }
+
+  async function fetchThemeData(themeName = "") {
+    const response = await fetch(`${baseUrl}/${themeName}.json`, { method: "GET" })
+    const { Colors: data } = await response.json()
+
+    const themeShortId = themes[themeName]
+
+    for (const swatch of data) {
+      const swatchName = Object.keys(swatch)[0]
+      const swatchId = `Studio${themeShortId} / ${swatchName}`
+      const colours = swatch[swatchName]
+
+      const swatchColours = {
+        Default: colours.Default,
+        Pressed: colours?.Pressed ?? colours.Default,
+        Selected: colours?.Selected ?? colours.Default,
+        Hover: colours?.Hover ?? colours.Default,
+        Disabled: colours?.Disabled ?? colours.Default,
+      }
+
+      for (const [modifierName, modifierHex] of Object.entries(swatchColours)) {
+        ipcMessage({
+          type: "CreatePaintStyle",
+          name: `${swatchId} / ${modifierName}`,
+          colour: modifierHex,
+        })
+      }
+
+      await sleep()
+    }
+
+    return true
+  }
+
+  function importThemes() {
+    return Promise.all(
+      Object.keys(themes).map((themeName) => fetchThemeData(themeName))
+    )
+  }
+
+  importThemes().then(() => {
+    ipcMessage({
+      type: "Completed",
+      message: `Successfully imported ${Object.keys(themes).length} themes!`,
+    })
+  }).catch((err) => {
+    console.error(err?.message ?? err)
+
+    ipcMessage({
+      type: "Completed",
+      message: "Something went wrong!",
+    })
+  })
+</script>

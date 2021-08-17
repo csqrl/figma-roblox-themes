@@ -1,0 +1,39 @@
+{
+  "name": "figma-roblox-themes",
+  "version": "1.0.0",
+  "description": "Import Roblox Studio theme colours directly into your project",
+  "main": "dist/code.js",
+  "scripts": {
+    "watch": "webpack --mode=development --watch",
+    "build": "webpack --mode=production"
+  },
+  "author": "csqrl (https://github.com/csqrl)",
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "url": "https://github.com/csqrl/figma-roblox-themes"
+  },
+  "homepage": "https://www.figma.com/community/plugin/1009209611304577085",
+  "bugs": {
+    "url": "https://github.com/csqrl/figma-roblox-themes/issues"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.28.0",
+    "@types/uuid": "^8.3.1",
+    "@typescript-eslint/eslint-plugin": "^4.29.2",
+    "@typescript-eslint/parser": "^4.29.2",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "html-webpack-inline-source-plugin": "^1.0.0-beta.2",
+    "html-webpack-plugin": "^5.3.2",
+    "prettier": "^2.3.2",
+    "ts-loader": "^9.2.5",
+    "typescript": "^4.3.5",
+    "webpack": "^5.50.0",
+    "webpack-cli": "^4.8.0"
+  },
+  "dependencies": {
+    "hex2rgb": "^2.2.0"
+  }
+}

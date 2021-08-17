@@ -1,0 +1,7 @@
+{
+  "name": "Import Roblox Studio Themes",
+  "id": "1009209611304577085",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html"
+}
