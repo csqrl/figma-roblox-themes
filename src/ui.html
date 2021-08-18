@@ -6,8 +6,6 @@
     "LightTheme": "Light",
   }
 
-  const sleep = (timeout = 100) => new Promise((resolve) => setTimeout(resolve, timeout))
-
   async function ipcMessage(message) {
     window.parent.postMessage({
       pluginMessage: message,
@@ -16,7 +14,12 @@
 
   async function fetchThemeData(themeName = "") {
     const response = await fetch(`${baseUrl}/${themeName}.json`, { method: "GET" })
-    const { Colors: data } = await response.json()
+    const data = (await response.json())?.Colors?.sort((a, b) => {
+      const swatchNameA = Object.keys(a)[0]
+      const swatchNameB = Object.keys(b)[0]
+
+      return swatchNameA < swatchNameB ? -1 : 1
+    })
 
     const themeShortId = themes[themeName]
 
@@ -40,14 +43,12 @@
           colour: modifierHex,
         })
       }
-
-      await sleep()
     }
 
     return true
   }
 
-  function importThemes() {
+  async function importThemes() {
     return Promise.all(
       Object.keys(themes).map((themeName) => fetchThemeData(themeName))
     )

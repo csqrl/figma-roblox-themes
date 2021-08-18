@@ -1,14 +1,7 @@
 import hex2rgb from "hex2rgb"
 
-let __paintStyles: PaintStyle[] = []
-
 async function getPaintStyles(): Promise<PaintStyle[]> {
-  if (__paintStyles.length) {
-    return __paintStyles
-  }
-
-  __paintStyles = figma.getLocalPaintStyles()
-  return __paintStyles
+  return figma.getLocalPaintStyles()
 }
 
 async function getOrCreatePaintStyle(name: string): Promise<PaintStyle> {
@@ -26,25 +19,41 @@ async function getOrCreatePaintStyle(name: string): Promise<PaintStyle> {
   return newStyle
 }
 
-async function fromHex(hex: string): Promise<RGB> {
-  const { rgb } = hex2rgb(hex)
+async function fromHex(hex: string): Promise<[RGB, number]> {
+  let useHex = hex
+  let opacity = 1
 
-  return {
-    r: rgb[0] / 255,
-    g: rgb[1] / 255,
-    b: rgb[2] / 255,
+  if (useHex.startsWith("#")) {
+    useHex = useHex.slice(1)
   }
+
+  if (useHex.length > 6) {
+    opacity = Math.min(parseInt(useHex.slice(0, 2), 16) / 255, 1)
+    useHex = useHex.slice(2)
+  }
+
+  const { rgb } = hex2rgb(useHex)
+
+  return [
+    {
+      r: Math.min(rgb[0] / 255, 1),
+      g: Math.min(rgb[1] / 255, 1),
+      b: Math.min(rgb[2] / 255, 1),
+    },
+    opacity,
+  ]
 }
 
 figma.ui.onmessage = async (evt) => {
   switch (evt?.type) {
     case "CreatePaintStyle":
       const paintStyle = await getOrCreatePaintStyle(evt.name)
+      const [rgb, opacity] = await fromHex(evt.colour)
 
       const paintData: SolidPaint = {
-        color: await fromHex(evt.colour),
+        color: rgb,
         type: "SOLID",
-        opacity: 1,
+        opacity,
       }
 
       paintStyle.paints = [paintData]

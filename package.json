@@ -1,6 +1,6 @@
 {
   "name": "figma-roblox-themes",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Import Roblox Studio theme colours directly into your project",
   "main": "dist/code.js",
   "scripts": {
